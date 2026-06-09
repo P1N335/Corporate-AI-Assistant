@@ -1,0 +1,8 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.env
+chroma_data/
+uploaded_files/
+.pytest_cache/
