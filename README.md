@@ -60,3 +60,29 @@ Corporate Assistant/
 - Роли пользователей и аутентификация
 - Dead-letter очередь и ретраи для worker
 - Helm chart, Kubernetes manifests, Jenkinsfile, ArgoCD
+
+
+## Kubernetes
+
+Манифесты для деплоя в кластер лежат в папке `k8s/` (namespace `corpai`):
+ConfigMap и Secret, StatefulSet для PostgreSQL, Deployment'ы для RabbitMQ, Chroma,
+backend, worker и frontend, общий PVC для загруженных файлов и опциональный
+Ingress. Backend и worker используют один образ, отличаясь командой запуска;
+worker масштабируется независимо (`kubectl scale`).
+
+Ollama остаётся вне кластера — её адрес задаётся в `k8s/01-config.yaml`
+(внешний OpenAI-совместимый эндпоинт или IP хоста).
+
+Быстрый старт (kind/minikube):
+
+```bash
+docker build -t corpai-backend:latest ./backend
+docker build -t corpai-frontend:latest ./frontend
+kind load docker-image corpai-backend:latest corpai-frontend:latest
+
+kubectl apply -f k8s/
+kubectl -n corpai get pods -w
+kubectl -n corpai port-forward svc/frontend 8501:8501   # → http://localhost:8501
+```
+
+Подробности и нюансы (загрузка образов, RWX-том, версия Chroma) — в `k8s/README.md`.

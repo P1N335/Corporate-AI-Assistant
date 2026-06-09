@@ -1,0 +1,22 @@
+# Ingress для внешнего доступа к UI (и при желании к API).
+# Требует установленного Ingress-контроллера (например, ingress-nginx).
+# Без него используй: kubectl -n corpai port-forward svc/frontend 8501:8501
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: corpai
+  namespace: corpai
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: corpai.local      # пропиши в hosts или замени на свой домен
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 8501

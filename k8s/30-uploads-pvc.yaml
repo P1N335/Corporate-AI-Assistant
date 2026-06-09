@@ -1,0 +1,15 @@
+# Общий том для файлов: backend пишет загруженный файл, worker его читает.
+# Нужен ReadWriteMany (RWX) — несколько подов монтируют одновременно.
+# RWX поддерживают NFS, CephFS, Azure Files и т.п. Дефолтный StorageClass
+# в kind/minikube обычно даёт только RWO — для демо запускай backend и worker
+# на одной ноде, либо подключи RWX-провайдер.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: uploads
+  namespace: corpai
+spec:
+  accessModes: ["ReadWriteMany"]
+  resources:
+    requests:
+      storage: 2Gi

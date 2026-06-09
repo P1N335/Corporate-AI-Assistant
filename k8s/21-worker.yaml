@@ -1,0 +1,40 @@
+# Worker — тот же образ, что и backend, но команда запускает consumer.
+# Масштабируется независимо: increase replicas под нагрузкой обработки.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  namespace: corpai
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+        - name: worker
+          image: corpai-backend:latest
+          imagePullPolicy: IfNotPresent
+          command: ["python", "-m", "workers.document_worker"]
+          envFrom:
+            - configMapRef:
+                name: corpai-config
+            - secretRef:
+                name: corpai-secret
+          volumeMounts:
+            - name: uploads
+              mountPath: /app/uploaded_files
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              memory: "512Mi"
+      volumes:
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: uploads

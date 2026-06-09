@@ -1,0 +1,27 @@
+# Несекретная конфигурация (аналог environment в docker-compose).
+# Хосты сервисов — это имена Service внутри кластера.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: corpai-config
+  namespace: corpai
+data:
+  LLM_MODEL: "qwen3:14b"
+  EMBEDDING_MODEL: "nomic-embed-text"
+  LLM_API_KEY: "ollama"
+
+  # Ollama НЕ в кластере. Варианты:
+  #  - внешний OpenAI-совместимый эндпоинт (рекомендуется для прода);
+  #  - Ollama на ноде/хосте, доступная по IP.
+  # Подставь реальный адрес вместо плейсхолдера.
+  LLM_BASE_URL: "http://OLLAMA_HOST:11434/v1"
+  OLLAMA_BASE_URL: "http://OLLAMA_HOST:11434"
+
+  CHROMA_MODE: "server"
+  CHROMA_HOST: "chroma"
+  CHROMA_PORT: "8000"
+  CHROMA_COLLECTION: "knowledge_base"
+
+  RABBITMQ_QUEUE: "document_processing"
+  UPLOAD_DIR: "/app/uploaded_files"
+  CORS_ORIGINS: "*"

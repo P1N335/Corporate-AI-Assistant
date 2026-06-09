@@ -1,0 +1,43 @@
+# Frontend (Streamlit). Обращается к backend по внутреннему адресу http://backend:8000.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: corpai
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: corpai-frontend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8501
+          env:
+            - name: BACKEND_URL
+              value: "http://backend:8000"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: corpai
+spec:
+  selector:
+    app: frontend
+  ports:
+    - port: 8501
+      targetPort: 8501
