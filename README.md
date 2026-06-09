@@ -26,33 +26,6 @@ tool `search_documents` → Chroma → LLM генерирует ответ по 
 обновляется в PostgreSQL.
 
 
-## Структура проекта
-
-
-Corporate Assistant/
-├── backend/
-│   ├── app/
-│   │   ├── main.py              # сборка FastAPI
-│   │   ├── api/                 # роуты: chat, documents, sessions, health
-│   │   ├── core/                # config (Pydantic Settings), logging
-│   │   ├── schemas/             # Pydantic DTO
-│   │   ├── models/              # ORM-модели (SQLAlchemy)
-│   │   ├── repositories/        # доступ к данным (document, chat)
-│   │   ├── services/            # llm, rag, document, chat
-│   │   ├── agents/              # LangGraph: state, nodes, graph
-│   │   ├── tools/               # search_documents
-│   │   └── infrastructure/      # database, vectorstore, rabbitmq
-│   ├── workers/document_worker.py
-│   ├── tests/                   # pytest
-│   ├── Dockerfile
-│   └── requirements.txt
-├── frontend/                    # Streamlit (chat + pages: документы, история)
-├── sample_docs/                 # тестовый документ
-├── docker-compose.yml
-├── .env.example
-└── README.md
-
-
 ## Roadmap (production-улучшения)
 
 - Alembic-миграции вместо `create_all`
