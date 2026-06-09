@@ -72,3 +72,41 @@ def list_documents() -> list[dict]:
 def send_feedback(message_id: str, rating: int) -> None:
     try:
         resp = requests.post(
+            f"{BACKEND_URL}/chat/feedback",
+            json={"message_id": message_id, "rating": rating},
+            timeout=10,
+        )
+    except requests.RequestException as exc:
+        raise BackendError(f"Backend недоступен по адресу {BACKEND_URL}.") from exc
+    if resp.status_code != 200:
+        raise BackendError(f"Не удалось сохранить оценку ({resp.status_code})")
+
+
+def list_sessions() -> list[dict]:
+    try:
+        resp = requests.get(f"{BACKEND_URL}/sessions", timeout=10)
+    except requests.RequestException as exc:
+        raise BackendError(f"Backend недоступен по адресу {BACKEND_URL}.") from exc
+    if resp.status_code != 200:
+        raise BackendError(f"Ошибка получения сессий ({resp.status_code})")
+    return resp.json()
+
+
+def get_session(session_id: str) -> dict:
+    try:
+        resp = requests.get(f"{BACKEND_URL}/sessions/{session_id}", timeout=10)
+    except requests.RequestException as exc:
+        raise BackendError(f"Backend недоступен по адресу {BACKEND_URL}.") from exc
+    if resp.status_code != 200:
+        raise BackendError(f"Ошибка получения сессии ({resp.status_code})")
+    return resp.json()
+
+
+def check_health() -> dict | None:
+    try:
+        resp = requests.get(f"{BACKEND_URL}/health", timeout=5)
+        if resp.status_code == 200:
+            return resp.json()
+    except requests.RequestException:
+        return None
+    return None

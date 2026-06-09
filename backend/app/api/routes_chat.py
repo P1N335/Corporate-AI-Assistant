@@ -31,3 +31,17 @@ async def chat(request: ChatRequest) -> ChatResponse:
         model=settings.llm_model,
         route=turn.route,
         session_id=turn.session_id,
+        message_id=turn.message_id,
+        sources=sources,
+    )
+
+
+@router.post("/chat/feedback")
+async def feedback(request: FeedbackRequest) -> dict:
+    ok = await run_in_threadpool(chat_repo.rate_message, request.message_id, request.rating)
+    if not ok:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Сообщение не найдено или не является ответом ассистента",
+        )
+    return {"status": "ok", "message_id": request.message_id, "rating": request.rating}

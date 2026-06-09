@@ -7,4 +7,5 @@ venv/
 chroma_data/
 uploaded_files/
 *.sqlite3
-.pytest_c
+.pytest_cache/
+.DS_Store

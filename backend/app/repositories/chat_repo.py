@@ -120,4 +120,18 @@ def _session_title(messages: list[Message]) -> str:
 def list_sessions() -> list[dict]:
     """Сводка по сессиям, отсортированная по последней активности."""
     with session_scope() as session:
-      
+        sessions = list(session.scalars(select(ChatSession)).all())
+
+        def last_activity(s: ChatSession):
+            return s.messages[-1].created_at if s.messages else s.created_at
+
+        sessions.sort(key=last_activity, reverse=True)
+        return [
+            {
+                "id": s.id,
+                "title": _session_title(s.messages),
+                "created_at": _iso(s.created_at),
+                "message_count": len(s.messages),
+            }
+            for s in sessions
+        ]
